@@ -143,10 +143,26 @@ function select_cat($select_cat){
 <input type="submit" name="start" value="<?=GetMessage("LEADSPACE_GISREVIEWSSLIDER_ZAPUSTITQ_IMPORT_OTZ")?>" class="adm-btn-save" onclick="get_category('catname');" style="margin:30px 0;">
 
 <div id="result"></div>
+
 <script>
-function get_category(catname){
-    var catname = catname;
-	$("#result").html('<img src="/bitrix/images/leadspace.gisreviewsslider/loader.gif" />');
-    $("#result").load("/local/leadspace/gisreviewsslider/agent.php");
-}
+BX.ready(function(){
+  window.get_category = function(catname){
+    var resultNode = BX('result');
+    BX.html(resultNode, '<img src="/bitrix/images/leadspace.gisreviewsslider/loader.gif">');
+
+    BX.ajax({
+      url: '/local/leadspace/gisreviewsslider/agent.php',
+      method: 'POST',
+      data: { catname: catname },
+      onsuccess: function(response){
+        // если agent.php отдает HTML — просто вставляем:
+        BX.html(resultNode, response);
+        // если отдает JSON — сначала JSON.parse(response) и рендери как нужно
+      },
+      onfailure: function(){
+        BX.html(resultNode, 'Ошибка загрузки. Попробуйте позже.');
+      }
+    });
+  };
+});
 </script>
