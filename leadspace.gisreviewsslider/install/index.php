@@ -28,13 +28,13 @@ class leadspace_gisreviewsslider extends CModule
 
 		$arModuleVersion = array();
 
-		// Подключение файла версии, который содержит массив для модуля
+		// РџРѕРґРєР»СЋС‡РµРЅРёРµ С„Р°Р№Р»Р° РІРµСЂСЃРёРё, РєРѕС‚РѕСЂС‹Р№ СЃРѕРґРµСЂР¶РёС‚ РјР°СЃСЃРёРІ РґР»СЏ РјРѕРґСѓР»СЏ
 		require(__DIR__ . "/version.php");
 
 
-		$this->MODULE_ID = "leadspace.gisreviewsslider"; // Имя модуля
+		$this->MODULE_ID = "leadspace.gisreviewsslider"; // РРјСЏ РјРѕРґСѓР»СЏ
 
-		// Переменная пути до папки с компонентами, для опциональной установки в папку local
+		// РџРµСЂРµРјРµРЅРЅР°СЏ РїСѓС‚Рё РґРѕ РїР°РїРєРё СЃ РєРѕРјРїРѕРЅРµРЅС‚Р°РјРё, РґР»СЏ РѕРїС†РёРѕРЅР°Р»СЊРЅРѕР№ СѓСЃС‚Р°РЅРѕРІРєРё РІ РїР°РїРєСѓ local
 		$this->COMPONENTS_PATH = $_SERVER["DOCUMENT_ROOT"] . "/local/components/";
 
 		$this->MODULE_VERSION = $arModuleVersion["VERSION"];
@@ -42,29 +42,29 @@ class leadspace_gisreviewsslider extends CModule
 		$this->MODULE_NAME = Loc::getMessage("LEADSPACE_GISREVIEWS_MODULE_NAME");
 		$this->MODULE_DESCRIPTION = Loc::getMessage("LEADSPACE_GISREVIEWS_MODULE_DESCRIPTION");
 
-		// Имя партнера создавшего модуль (Выводится информация в списке модулей о человеке или компании, которая создала этот модуль)
+		// РРјСЏ РїР°СЂС‚РЅРµСЂР° СЃРѕР·РґР°РІС€РµРіРѕ РјРѕРґСѓР»СЊ (Р’С‹РІРѕРґРёС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ РІ СЃРїРёСЃРєРµ РјРѕРґСѓР»РµР№ Рѕ С‡РµР»РѕРІРµРєРµ РёР»Рё РєРѕРјРїР°РЅРёРё, РєРѕС‚РѕСЂР°СЏ СЃРѕР·РґР°Р»Р° СЌС‚РѕС‚ РјРѕРґСѓР»СЊ)
 		$this->PARTNER_NAME = Loc::getMessage("LEADSPACE_GISREVIEWS_PARTNER_NAME");
 		$this->PARTNER_URI = Loc::getMessage("LEADSPACE_GISREVIEWS_PARTNER_URI");
 
-		// Если указано, то на странице прав доступа будут показаны администраторы и группы (страницу сначала нужно запрограммировать)
+		// Р•СЃР»Рё СѓРєР°Р·Р°РЅРѕ, С‚Рѕ РЅР° СЃС‚СЂР°РЅРёС†Рµ РїСЂР°РІ РґРѕСЃС‚СѓРїР° Р±СѓРґСѓС‚ РїРѕРєР°Р·Р°РЅС‹ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂС‹ Рё РіСЂСѓРїРїС‹ (СЃС‚СЂР°РЅРёС†Сѓ СЃРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ Р·Р°РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°С‚СЊ)
 		$this->SHOW_SUPER_ADMIN_GROUP_RIGHTS = "Y";
-		// Если указано, то на странице редактирования групп будет отображаться этот модуль
+		// Р•СЃР»Рё СѓРєР°Р·Р°РЅРѕ, С‚Рѕ РЅР° СЃС‚СЂР°РЅРёС†Рµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РіСЂСѓРїРї Р±СѓРґРµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ СЌС‚РѕС‚ РјРѕРґСѓР»СЊ
 		$this->MODULE_GROUP_RIGHTS = "Y";
 
 	}
 
 
-	// Установка баз данных
+	// РЈСЃС‚Р°РЅРѕРІРєР° Р±Р°Р· РґР°РЅРЅС‹С…
 	function installDB() {
 		Loader::includeModule($this->MODULE_ID);
 		if (!Application::getConnection(\leadspace\gisreviewsslider\ReviewsTable::getConnectionName())->isTableExists(Base::getInstance("\leadspace\gisreviewsslider\ReviewsTable")->getDBTableName()))
-			Base::getInstance("\leadspace\gisreviewsslider\ReviewsTable")->createDbTable(); // Если таблицы не существует, то создаем её по ORM сущности
+			Base::getInstance("\leadspace\gisreviewsslider\ReviewsTable")->createDbTable(); // Р•СЃР»Рё С‚Р°Р±Р»РёС†С‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚, С‚Рѕ СЃРѕР·РґР°РµРј РµС‘ РїРѕ ORM СЃСѓС‰РЅРѕСЃС‚Рё
 		if (!Application::getConnection(\leadspace\gisreviewsslider\CompanyTable::getConnectionName())->isTableExists(Base::getInstance("\leadspace\gisreviewsslider\CompanyTable")->getDBTableName()))
-			Base::getInstance("\leadspace\gisreviewsslider\CompanyTable")->createDbTable(); // Если таблицы не существует, то создаем её по ORM сущности
+			Base::getInstance("\leadspace\gisreviewsslider\CompanyTable")->createDbTable(); // Р•СЃР»Рё С‚Р°Р±Р»РёС†С‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚, С‚Рѕ СЃРѕР·РґР°РµРј РµС‘ РїРѕ ORM СЃСѓС‰РЅРѕСЃС‚Рё
 	}
 
 
-	// Копирование файлов
+	// РљРѕРїРёСЂРѕРІР°РЅРёРµ С„Р°Р№Р»РѕРІ
 	function installFiles() {
 		$resMsg = "";
 		$res = CopyDirFiles(
@@ -95,7 +95,7 @@ class leadspace_gisreviewsslider extends CModule
 	}
 
 
-	// Установка агентов
+	// РЈСЃС‚Р°РЅРѕРІРєР° Р°РіРµРЅС‚РѕРІ
 	function installAgents() {
 		\CAgent::AddAgent(
 			"\leadspace\gisreviewsslider\Agent::superGisAgent();",
@@ -110,7 +110,7 @@ class leadspace_gisreviewsslider extends CModule
 	}
 
 
-	// Для удобства проверки результата
+	// Р”Р»СЏ СѓРґРѕР±СЃС‚РІР° РїСЂРѕРІРµСЂРєРё СЂРµР·СѓР»СЊС‚Р°С‚Р°
 	function checkAddResult($result) {
 		if ($result->isSuccess()) {
 			return [true, $result->getId()];
@@ -123,7 +123,7 @@ class leadspace_gisreviewsslider extends CModule
 
 		$context = Application::getInstance()->getContext();
 		$request = $context->getRequest();
-		// Проверяем какой сейчас шаг, если он не существует или меньше 2, то выводим первый шаг установки
+		// РџСЂРѕРІРµСЂСЏРµРј РєР°РєРѕР№ СЃРµР№С‡Р°СЃ С€Р°Рі, РµСЃР»Рё РѕРЅ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ РёР»Рё РјРµРЅСЊС€Рµ 2, С‚Рѕ РІС‹РІРѕРґРёРј РїРµСЂРІС‹Р№ С€Р°Рі СѓСЃС‚Р°РЅРѕРІРєРё
 		if ($request["step"] < 2) {
 			if (file_exists($_SERVER["DOCUMENT_ROOT"] . "/local/modules/leadspace.gisreviewsslider/install/step1.php"))
 				$APPLICATION->IncludeAdminFile(Loc::getMessage("LEADSPACE_GISREVIEWS_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"] . "/local/modules/leadspace.gisreviewsslider/install/step1.php");
@@ -149,7 +149,7 @@ class leadspace_gisreviewsslider extends CModule
 		}
 	}
 
-	// Удаление файлов
+	// РЈРґР°Р»РµРЅРёРµ С„Р°Р№Р»РѕРІ
 	function unInstallFiles() {
 		$res = true;
 		$resMsg = "";
@@ -169,7 +169,7 @@ class leadspace_gisreviewsslider extends CModule
     }
 
 
-	// Удаление баз данных и параметров
+	// РЈРґР°Р»РµРЅРёРµ Р±Р°Р· РґР°РЅРЅС‹С… Рё РїР°СЂР°РјРµС‚СЂРѕРІ
 	function unInstallDB() {
 		Loader::includeModule($this->MODULE_ID);
 
@@ -179,12 +179,12 @@ class leadspace_gisreviewsslider extends CModule
 		Option::delete($this->MODULE_ID);
 	}
 
-	// Удаление агентов
+	// РЈРґР°Р»РµРЅРёРµ Р°РіРµРЅС‚РѕРІ
 	function unInstallAgents() {
 		\CAgent::RemoveModuleAgents($this->MODULE_ID);
 	}
 
-	// Основная функция удаления
+	// РћСЃРЅРѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ СѓРґР°Р»РµРЅРёСЏ
 	function DoUninstall() {
 		global $APPLICATION;
 

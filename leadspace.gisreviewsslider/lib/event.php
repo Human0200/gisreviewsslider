@@ -7,7 +7,7 @@ class Event {
     static public function eventHandler(\Bitrix\Main\Entity\Event $event) {
         $fields = $event->getParameter("fields");
         echo "<pre>";
-        echo "Обработчик события";
+        echo "РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ";
         var_dump($fields);
         echo "</pre>";
     }

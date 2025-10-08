@@ -1,29 +1,29 @@
 <?php
 
 function sendPostRequestUsingCurl($url, $params = []) {
-    // Èíèöèàëèçèðóåì cURL-ñåññèþ
+    // Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€ÑƒÐµÐ¼ cURL-ÑÐµÑÑÐ¸ÑŽ
     $ch = curl_init($url);
 
-    // Óñòàíàâëèâàåì ïàðàìåòðû cURL äëÿ POST-çàïðîñà
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // Ïîëó÷àòü îòâåò â âèäå ñòðîêè
-    curl_setopt($ch, CURLOPT_POST, true);  // Óñòàíàâëèâàåì ìåòîä POST
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));  // Îòïðàâëÿåì ïàðàìåòðû
+    // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ cURL Ð´Ð»Ñ POST-Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // ÐŸÐ¾Ð»ÑƒÑ‡Ð°Ñ‚ÑŒ Ð¾Ñ‚Ð²ÐµÑ‚ Ð² Ð²Ð¸Ð´Ðµ ÑÑ‚Ñ€Ð¾ÐºÐ¸
+    curl_setopt($ch, CURLOPT_POST, true);  // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð¼ÐµÑ‚Ð¾Ð´ POST
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));  // ÐžÑ‚Ð¿Ñ€Ð°Ð²Ð»ÑÐµÐ¼ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹
 
-    // Óñòàíàâëèâàåì òàéìàóòû
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);  // Òàéìàóò äëÿ ïîäêëþ÷åíèÿ
-    curl_setopt($ch, CURLOPT_TIMEOUT, 120);  // Òàéìàóò äëÿ âûïîëíåíèÿ çàïðîñà
+    // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ñ‚Ð°Ð¹Ð¼Ð°ÑƒÑ‚Ñ‹
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);  // Ð¢Ð°Ð¹Ð¼Ð°ÑƒÑ‚ Ð´Ð»Ñ Ð¿Ð¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ
+    curl_setopt($ch, CURLOPT_TIMEOUT, 120);  // Ð¢Ð°Ð¹Ð¼Ð°ÑƒÑ‚ Ð´Ð»Ñ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
 
-    // Îòïðàâëÿåì çàïðîñ
+    // ÐžÑ‚Ð¿Ñ€Ð°Ð²Ð»ÑÐµÐ¼ Ð·Ð°Ð¿Ñ€Ð¾Ñ
     $response = curl_exec($ch);
 
-    // Ïðîâåðÿåì íà îøèáêè
+    // ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð½Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ¸
     if (curl_errno($ch)) {
         $error_msg = curl_error($ch);
         curl_close($ch);
-        return "Îøèáêà cURL: " . $error_msg;
+        return "ÐžÑˆÐ¸Ð±ÐºÐ° cURL: " . $error_msg;
     }
 
-    // Çàêðûâàåì cURL-ñåññèþ
+    // Ð—Ð°ÐºÑ€Ñ‹Ð²Ð°ÐµÐ¼ cURL-ÑÐµÑÑÐ¸ÑŽ
     curl_close($ch);
 
     return $response;

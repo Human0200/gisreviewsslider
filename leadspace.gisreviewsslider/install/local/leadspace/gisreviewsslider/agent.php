@@ -146,7 +146,7 @@ try {
             $reviewId = $DB->Insert("leadspace_gisreviewsslider", $arFields);
             $savedCount++;
 
-            // $output .= "<p>Сохранен отзыв от $userName (ID: $reviewId)</p>";
+             $output .= "<p>Сохранен отзыв от $userName (ID: $reviewId)</p>";
         } catch (Exception $e) {
             $output .= "<p style='color:orange'>Ошибка при сохранении отзыва: " . $e->getMessage() . "</p>";
         }

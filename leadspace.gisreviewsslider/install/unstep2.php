@@ -2,17 +2,17 @@
 use \Bitrix\Main\Localization\Loc;
 if (!check_bitrix_sessid())
     return;
-// Ïðîâåðÿåì áûëà ëè âûáðîøåíà îøèáêà ïðè óñòàíîâêå, åñëè äà, òî çàïèñûâàåì å¸ â ïåðåìåííóþ $ex
+// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð±Ñ‹Ð»Ð° Ð»Ð¸ Ð²Ñ‹Ð±Ñ€Ð¾ÑˆÐµÐ½Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐµ, ÐµÑÐ»Ð¸ Ð´Ð°, Ñ‚Ð¾ Ð·Ð°Ð¿Ð¸ÑÑ‹Ð²Ð°ÐµÐ¼ ÐµÑ‘ Ð² Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½ÑƒÑŽ $ex
 if ($ex = $APPLICATION->GetException())
-    // Âûâîäèì îøèáêó
+    // Ð’Ñ‹Ð²Ð¾Ð´Ð¸Ð¼ Ð¾ÑˆÐ¸Ð±ÐºÑƒ
     echo CAdminMessage::ShowMessage(array(
         "TYPE" => "ERROR",
-        "MESSAGE" => Loc::getMessage("MOD_UNINST_ERR"), // MOD_UNINST_ERR - ñèñòåìíàÿ ÿçûêîâàÿ ïåðåìåííàÿ
+        "MESSAGE" => Loc::getMessage("MOD_UNINST_ERR"), // MOD_UNINST_ERR - ÑÐ¸ÑÑ‚ÐµÐ¼Ð½Ð°Ñ ÑÐ·Ñ‹ÐºÐ¾Ð²Ð°Ñ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ
         "DETAILS" => $ex->GetString(),
         "HTML" => true,
     ));
 else
-    // Åñëè îøèáêè íå áûëî, òî âûâîäèì ñîîáùåíèå îá óñòàíîâêå ìîäóëÿ (MOD_UNINST_OK - ñèñòåìíàÿ ÿçûêîâàÿ ïåðåìåííàÿ)
+    // Ð•ÑÐ»Ð¸ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ Ð½Ðµ Ð±Ñ‹Ð»Ð¾, Ñ‚Ð¾ Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ð¼ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð¾Ð± ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐµ Ð¼Ð¾Ð´ÑƒÐ»Ñ (MOD_UNINST_OK - ÑÐ¸ÑÑ‚ÐµÐ¼Ð½Ð°Ñ ÑÐ·Ñ‹ÐºÐ¾Ð²Ð°Ñ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ)
     echo CAdminMessage::ShowNote(Loc::getMessage("MOD_UNINST_OK"));
 ?>
 

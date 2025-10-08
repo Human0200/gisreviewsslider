@@ -10,7 +10,7 @@ $arSettings = array();
 $arSettings["MODULE_ID"] = 'leadspace.gisreviewsslider';
 $arSettings["U_PATH"] = '/iupdate/';
 
-$arSettings["MODULE_PATH"] = $_SERVER["DOCUMENT_ROOT"].'/local/modules/'.$arSettings["MODULE_ID"].'/';
+$arSettings["MODULE_PATH"] = $_SERVER["DOCUMENT_ROOT"].'/bitrix/modules/'.$arSettings["MODULE_ID"].'/';
 $arSettings["UPDATE_PATH"] = $_SERVER["DOCUMENT_ROOT"].'/'.$arSettings["U_PATH"];
 
 $arSettings["DIR_READ_NOFOLLOW"] = array(
