@@ -1,5 +1,6 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
+require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/leadspace.gisreviewsslider/lib/function.php";
 define("LOG_FILENAME", $_SERVER["DOCUMENT_ROOT"] . "/log1.txt");
 
 use \Bitrix\Main\Loader;
@@ -28,23 +29,8 @@ $response = sendPostRequestUsingCurl("http://217.114.4.16/seleniumParser/handler
 ]);
 
 
-$data = json_decode($response, true);
-if (json_last_error() === JSON_ERROR_NONE) {
-    if (isset($data['status']) && $data['status'] === 'error') {
-        die("Error from Selenium: " . $data['message']);
-    }
-    $source = $data['html'] ?? '';
-} else {
-    $source = $response;
-}
-
-if ($source === 'Error: Tried to run command without establishing a connection') {
-    echo "Произошла ошибка, попробуйте ещё раз";
-    die();
-}
-
-$doc = phpQuery::newDocument($source);
-file_put_contents(__DIR__ . '/page_html.html', $source);
+$doc = phpQuery::newDocument($response);
+file_put_contents(__DIR__ . '/page_html.html', $response);
 
 // 2. Парсим основную информацию о компании
 $company = [
@@ -91,66 +77,81 @@ try {
     $output .= "<div><strong>Количество оценок:</strong> " . $company["countmarks"] . "</div>";
     $output .= "</div>";
 
-    // 4. Парсим и сохраняем отзывы
-    $output .= "<h3>Обработка отзывов:</h3>";
+// 4. Парсим и сохраняем отзывы
+$output .= "<h3>Обработка отзывов:</h3>";
 
-    $reviews = $doc->find('._1k5soqfl');
-    $savedCount = 0;
+$reviews = $doc->find('._1k5soqfl');
+$savedCount = 0;
 
-    foreach ($reviews as $review) {
-        $review = pq($review);
-        try {
-            // Парсим данные отзыва
-            $userName = trim($review->find('._16s5yj36')->text());
-            $userPhoto = '';
-            $img = $review->find('._10bkgj3 img');
-            if ($img->length) {
-                $src = $img->attr('src');
-                if ($src) {
-
-                    $userPhoto = html_entity_decode($src, ENT_QUOTES, 'UTF-8');
-                    $userPhoto = trim($userPhoto, " '\"");
-                }
+foreach ($reviews as $review) {
+    $review = pq($review);
+    try {
+        // Парсим данные отзыва
+        $userName = trim($review->find('._16s5yj36')->text());
+        $userPhoto = '';
+        $img = $review->find('._10bkgj3 img');
+        if ($img->length) {
+            $src = $img->attr('src');
+            if ($src) {
+                $userPhoto = html_entity_decode($src, ENT_QUOTES, 'UTF-8');
+                $userPhoto = trim($userPhoto, " '\"");
             }
-            $rating = $review->find('._1fkin5c span')->length;
-            $text = trim($review->find('._1wlx08h, ._1msln3t')->text());
-            $dateText = trim($review->find('._1evjsdb')->text());
-            $dateText = trim(substr($dateText, 0, strpos($dateText, ',')));
-
-            $dateString = str_replace(
-                ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                $dateText
-            );
-
-            $date = new DateTime($dateString);
-            file_put_contents(__DIR__ . '/date.txt', $date->getTimestamp());
-
-            $timestamp = $date->getTimestamp();
-
-            if (!$timestamp) {
-                $timestamp = time();
-            }
-
-            // Сохраняем отзыв в БД
-            $DB->PrepareFields("leadspace_gisreviewsslider");
-            $arFields = [
-                "NAME" => "'" . $DB->ForSql($userName) . "'",
-                "IMAGE" => "'" . $DB->ForSql($userPhoto) . "'",
-                "RATING" => "'" . $rating . "'",
-                "TIME" => "'" . $timestamp . "'",
-                "DATA" => "'" . $timestamp . "'",
-                "DESCRIPTION" => "'" . $DB->ForSql($text) . "'",
-            ];
-
-            $reviewId = $DB->Insert("leadspace_gisreviewsslider", $arFields);
-            $savedCount++;
-
-             $output .= "<p>Сохранен отзыв от $userName (ID: $reviewId)</p>";
-        } catch (Exception $e) {
-            $output .= "<p style='color:orange'>Ошибка при сохранении отзыва: " . $e->getMessage() . "</p>";
         }
+        $rating = $review->find('._1fkin5c span')->length;
+        $text = trim($review->find('._1msln3t, ._1wlx08h')->text());
+        $dateText = trim($review->find('._a5f6uz')->text());
+        
+        // Убираем лишние части (если есть), но не обрезаем по запятой
+        $dateText = preg_replace('/\s*[,\-].*$/', '', $dateText);
+        
+        // Для отладки - посмотрим что парсим
+       // $output .= "<p>Парсим дату: '$dateText'</p>";
+        
+        $dateString = str_replace(
+            ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
+            ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            $dateText
+        );
+
+        // Создаем дату с указанием формата
+        $date = DateTime::createFromFormat('d F Y', $dateString);
+        
+        if (!$date) {
+            // Если не получилось, пробуем другой подход
+            $timestamp = strtotime($dateString);
+            if ($timestamp === false) {
+                $timestamp = time();
+                $output .= "<p style='color:orange'>Не удалось распарсить дату '$dateText', использовано текущее время</p>";
+            }
+        } else {
+            $timestamp = $date->getTimestamp();
+        }
+
+        // Для отладки сохраняем результат
+        file_put_contents(__DIR__ . '/date_debug.txt', 
+            "Original: $dateText\nParsed: $dateString\nTimestamp: $timestamp\n", 
+            FILE_APPEND
+        );
+
+        // Сохраняем отзыв в БД
+        $DB->PrepareFields("leadspace_gisreviewsslider");
+        $arFields = [
+            "NAME" => "'" . $DB->ForSql($userName) . "'",
+            "IMAGE" => "'" . $DB->ForSql($userPhoto) . "'",
+            "RATING" => "'" . $rating . "'",
+            "TIME" => "'" . $timestamp . "'",
+            "DATA" => "'" . $timestamp . "'",
+            "DESCRIPTION" => "'" . $DB->ForSql($text) . "'",
+        ];
+
+        $reviewId = $DB->Insert("leadspace_gisreviewsslider", $arFields);
+        $savedCount++;
+
+       // $output .= "<p>Сохранен отзыв от $userName (дата: $dateText, timestamp: $timestamp, ID: $reviewId)</p>";
+    } catch (Exception $e) {
+        $output .= "<p style='color:red'>Ошибка при сохранении отзыва: " . $e->getMessage() . "</p>";
     }
+}
 
     $output .= "<p style='color:green'>Всего сохранено отзывов: $savedCount</p>";
 } catch (Exception $e) {

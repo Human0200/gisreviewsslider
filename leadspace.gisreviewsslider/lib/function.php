@@ -15,7 +15,7 @@ function sendPostRequestUsingCurl($url, $params = []) {
 
     // Отправляем запрос
     $response = curl_exec($ch);
-
+    
     // Проверяем на ошибки
     if (curl_errno($ch)) {
         $error_msg = curl_error($ch);
@@ -25,11 +25,13 @@ function sendPostRequestUsingCurl($url, $params = []) {
 
     // Закрываем cURL-сессию
     curl_close($ch);
+    debugPrint($response);
 
     return $response;
 }
 function debugPrint($variable) {
-    echo '<pre>';
-    print_r($variable);
-    echo '</pre>';
+    file_put_contents(dirname(__FILE__).'/phpQuery.html', print_r($variable, true)."\n", FILE_APPEND);
+    // echo '<pre>';
+    // print_r($variable);
+    // echo '</pre>';
 }
