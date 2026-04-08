@@ -1,7 +1,6 @@
 <?php
 
-namespace leadspace\yandexreviewsslider;
-
+namespace leadspace\gisreviewsslider;
 
 use \Bitrix\Main\Localization\Loc;
 use \Bitrix\Main\Loader;
@@ -14,11 +13,9 @@ use \Bitrix\Main\Type;
 
 class Agent {
 
-    static public function superAgent() {
-	require_once $_SERVER["DOCUMENT_ROOT"] . "/local/leadspace/yandexreviewsslider/agent.php";
-
-        return "\leadspace\yandexreviewsslider\Agent::superAgent();";
-
+    static public function superGisAgent() {
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/local/leadspace/gisreviewsslider/agent.php";
+        return "\leadspace\gisreviewsslider\Agent::superGisAgent();";
     }
 
 }

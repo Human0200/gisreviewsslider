@@ -1,6 +1,6 @@
 <?php
 
-namespace leadspace\yandexreviewsslider;
+namespace leadspace\gisreviewsslider;
 
 class Event {
 
