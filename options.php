@@ -11,6 +11,29 @@ Loc::loadMessages(__FILE__);
 
 $module_id = "leadspace.gisreviewsslider";
 
+function showLicenseErrorMessage($moduleId)
+{
+    if (!class_exists('\leadspace\gisreviewsslider\Agent')) {
+        return;
+    }
+
+    $moduleLicenseStatus = \CModule::IncludeModuleEx($moduleId);
+    $licenseErrorMessage = '';
+
+    if ($moduleLicenseStatus === MODULE_DEMO_EXPIRED) {
+        $licenseErrorMessage = 'Отзывы не загружаются, так как ваша лицензия на решение больше не активна.';
+    } elseif ($moduleLicenseStatus !== MODULE_INSTALLED && $moduleLicenseStatus !== MODULE_DEMO) {
+        $licenseErrorMessage = 'Отзывы не загружаются, так как лицензия на решение недоступна или не активна.';
+    }
+
+    if ($licenseErrorMessage !== '' && class_exists('CAdminMessage')) {
+        CAdminMessage::ShowMessage([
+            'TYPE' => 'ERROR',
+            'MESSAGE' => $licenseErrorMessage,
+        ]);
+    }
+}
+
 // Подключаем модуль
 Loader::includeModule($module_id);
 
@@ -80,12 +103,19 @@ if ($request->isPost() && $request["Update"] && check_bitrix_sessid()) {
     }
 }
 
+// Показываем ошибку лицензии сразу после загрузки настроек
+ob_start();
+showLicenseErrorMessage($module_id);
+$licenseMessageHtml = ob_get_clean();
+
 // Создаем объект вкладок
 $tabControl = new CAdminTabControl('tabControl', $aTabs);
 
 // Начинаем вывод формы
 $tabControl->Begin();
 ?>
+
+<?=$licenseMessageHtml?>
 
 <form method="post"
       name="leadspace_reviews_settings"
