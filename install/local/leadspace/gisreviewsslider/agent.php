@@ -80,26 +80,26 @@ try {
 // 4. Парсим и сохраняем отзывы
 $output .= "<h3>Обработка отзывов:</h3>";
 
-$reviews = $doc->find('._1k5soqfl');
+$reviews = $doc->find('._1rowqpjv');
 $savedCount = 0;
 
 foreach ($reviews as $review) {
     $review = pq($review);
     try {
         // Парсим данные отзыва
-        $userName = trim($review->find('._16s5yj36')->text());
+        $userName = trim($review->find('._19h0cqe')->text());
         $userPhoto = '';
-        $img = $review->find('._10bkgj3 img');
-        if ($img->length) {
-            $src = $img->attr('src');
-            if ($src) {
-                $userPhoto = html_entity_decode($src, ENT_QUOTES, 'UTF-8');
+        $photoBlock = $review->find('._1x9sazk ._1dk5lq4')->eq(0);
+        if ($photoBlock->length) {
+            $style = (string)$photoBlock->attr('style');
+            if (preg_match('/background-image:\s*url\((["\']?)(.*?)\1\)/i', $style, $matches)) {
+                $userPhoto = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
                 $userPhoto = trim($userPhoto, " '\"");
             }
         }
         $rating = $review->find('._1fkin5c span')->length;
-        $text = trim($review->find('._1msln3t, ._1wlx08h')->text());
-        $dateText = trim($review->find('._a5f6uz')->text());
+        $text = trim($review->find('._83kmcy a')->eq(0)->text());
+        $dateText = trim($review->find('._10c0hgu')->eq(0)->text());
         
         // Убираем лишние части (если есть), но не обрезаем по запятой
         $dateText = preg_replace('/\s*[,\-].*$/', '', $dateText);

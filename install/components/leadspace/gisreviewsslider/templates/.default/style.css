@@ -1,8 +1,4 @@
 
-.a11y-hidden {
-    display: block;
-}
-
 .ls_app-body {
     display: flex;
     -webkit-display: flex;

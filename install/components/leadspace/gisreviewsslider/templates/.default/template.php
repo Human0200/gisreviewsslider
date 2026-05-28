@@ -176,7 +176,6 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
         </div>
     </div>
 </div>
-</div>
 <script>
     $('.ls_items-text').readmore({
         collapsedHeight: 40
