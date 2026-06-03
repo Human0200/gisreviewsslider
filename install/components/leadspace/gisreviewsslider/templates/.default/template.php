@@ -3,6 +3,11 @@
 use \Bitrix\Main\Config\Option;
 
 $idCompany = Option::get("leadspace.gisreviewsslider", "company_id");
+// Validate company URL to prevent javascript: and other non-http(s) schemes
+if (!preg_match('#^https?://#i', $idCompany)) {
+    $idCompany = '';
+}
+$idCompany = htmlspecialcharsbx($idCompany);
 $hide_logo = Option::get("leadspace.gisreviewsslider", "hide_logo");
 if ($arParams["NO_JQUERY"] != "Y") {
     CJSCore::Init(array("jquery"));
@@ -20,30 +25,42 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
 
 ?>
 
+<?
+// Sanitize CSS color values: allow only valid hex colors (#xxx or #xxxxxx) or named colors (letters only)
+function ls_sanitize_color($value, $default) {
+    if (preg_match('/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/', $value) || preg_match('/^[a-zA-Z]+$/', $value)) {
+        return $value;
+    }
+    return $default;
+}
+$colorButtons     = ls_sanitize_color($arParams["COLOR_BUTTONS"], "#007aff");
+$colorButtonText  = ls_sanitize_color($arParams["COLOR_BUTTON_TEXT"], "#212121");
+$colorButton      = ls_sanitize_color($arParams["COLOR_BUTTON"], "#ffffff");
+?>
 <style>
     .gisreviews .ls_review-bottom .ls_button-next:hover, .ls_review-bottom .ls_button-prev:hover {
-        background-color: <?=$arParams["COLOR_BUTTONS"] ?  $arParams["COLOR_BUTTONS"]: "#007aff";?> !important;
+        background-color: <?= $colorButtons ?> !important;
         color: #ffffff !important;
     }
     .ls_app-body.gisreviews .slick-dots li.slick-active button {
-        background-color: <?=$arParams["COLOR_BUTTONS"] ?  $arParams["COLOR_BUTTONS"]: "#007aff";?> !important;
+        background-color: <?= $colorButtons ?> !important;
     }
 
     .gisreviews .slick-dots li.slick-active button {
-        background: <?=$arParams["COLOR_BUTTONS"] ?  $arParams["COLOR_BUTTONS"]: "#007aff";?>;
+        background: <?= $colorButtons ?>;
     }
 
     .ls_app-body.gisreviews a.ls_reviews-btn {
 
-        color: <?=$arParams["COLOR_BUTTON_TEXT"] ? $arParams["COLOR_BUTTON_TEXT"]: "#212121";?> !important;
-        background-color: <?=$arParams["COLOR_BUTTON"] ? $arParams["COLOR_BUTTON"]: "#ffffff";?>;
+        color: <?= $colorButtonText ?> !important;
+        background-color: <?= $colorButton ?>;
     }
 
 </style>
 <div class="ls_app-body gisreviews">
     <div class="ls_review-box ls_review-unselectable">
-        <div class="ls_business-summary-rating-badge-view__rating"><?= $arResult["COMPANY"][0]["NAME"] ?>
-            <br> <?= $arResult["COMPANY"][0]["RATING"] ?> <?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_IZ") ?>
+        <div class="ls_business-summary-rating-badge-view__rating"><?= htmlspecialcharsbx($arResult["COMPANY"][0]["NAME"]) ?>
+            <br> <?= htmlspecialcharsbx($arResult["COMPANY"][0]["RATING"]) ?> <?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_IZ") ?>
         </div>
         <div class="ls_business-rating-badge-view__stars">
 
@@ -84,7 +101,7 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
         <? if($arParams["GIS_BUTTON"]){?>
         <a target="_blank" href="<?= $idCompany ?>?writeReview"
            class="ls_reviews-btn ls_reviews-btn-form"
-           rel="nofollow noreferrer noopener"><?= $arParams["GIS_BUTTON"]?></a>
+           rel="nofollow noreferrer noopener"><?= htmlspecialcharsbx($arParams["GIS_BUTTON"]) ?></a>
         <?}?>
     </div>
     <div style="min-width: 0;width: 100%;">
@@ -102,13 +119,13 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
                                         <? if (!$value["IMAGE"]) {
                                             $value["IMAGE"] = "data:image/svg+xml,%3Csvg width='100%25' height='100%25' version='1.1' viewBox='0 0 123.96 124.31' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(-54.068 -77.525)' fill='%23b3b3b3'%3E%3Ccircle cx='116.18' cy='112.13' r='34.607'/%3E%3Cpath d='m54.068 201.84h123.96v-7.6073c-3.3235-20.13-29.184-36.953-61.047-37.012-37.638 0.90944-59.352 17.834-62.914 37.012z'/%3E%3C/g%3E%3C/svg%3E%0A";
                                         } ?>
-                                        <img class="ls-avatar" loading="lazy" src="<?= $value["IMAGE"] ?>"
-                                             alt="<?= $value["NAME"] ?>">
+                                        <img class="ls-avatar" loading="lazy" src="<?= htmlspecialcharsbx($value["IMAGE"]) ?>"
+                                             alt="<?= htmlspecialcharsbx($value["NAME"]) ?>">
 
 
                                     </div>
                                     <div class="ls_business-review-view__author-info">
-                                        <div class="ls_business-review-view__author-name"><?= $value["NAME"] ?>
+                                        <div class="ls_business-review-view__author-name"><?= htmlspecialcharsbx($value["NAME"]) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +154,7 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
                                 </div>
                                 <div dir="auto" class="ls_business-review-view__body">
                                     <div class="ls_items-text">
-                                        <?= $value["DESCRIPTION"] ?>
+                                        <?= htmlspecialcharsbx($value["DESCRIPTION"]) ?>
                                     </div>
                                     <a target="_blank" href="<?= $idCompany ?>"
                                        class="ls_review-source-link"><?= GetMessage("LEADSPACE_GIS_MAP_REVIEW") ?></a>
@@ -183,7 +200,7 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
     $(".gisreviews .ls_gis_regular").slick({
         dots: true,
         infinite: true,
-        slidesToShow: <?=$arParams["SLIDE_DESCKTOP_COUNT"]?>,
+        slidesToShow: <?=(int)$arParams["SLIDE_DESCKTOP_COUNT"]?>,
         prevArrow: $('.gisreviews .ls_button-prev'),
         nextArrow: $('.gisreviews .ls_button-next'),
         appendDots: $('.gisreviews .ls_pagination'),
@@ -192,7 +209,7 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
             {
                 breakpoint: 800,
                 settings: {
-                    slidesToShow: <?=$arParams["SLIDE_MOBILE_COUNT"]?>,
+                    slidesToShow: <?=(int)$arParams["SLIDE_MOBILE_COUNT"]?>,
                     dots: false,
                 }
             }
@@ -200,7 +217,7 @@ $APPLICATION->AddHeadScript($templateFolder . "/js/readmore.js");
         ],
         <?if($arParams["AUTOPLAY"] == "Y"){?>
         autoplay: true,
-        autoplaySpeed: <?=$arParams["AUTOPLAY_SPEED"]?>,
+        autoplaySpeed: <?=(int)$arParams["AUTOPLAY_SPEED"]?>,
         <?}?>
     });
 </script>
