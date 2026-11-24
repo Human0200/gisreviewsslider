@@ -1,37 +1,44 @@
 <?php
 
-function sendPostRequestUsingCurl($url, $params = []) {
-    // Инициализируем cURL-сессию
+function fetchUrlUsingCurl($url, $headers = []) {
     $ch = curl_init($url);
 
-    // Устанавливаем параметры cURL для POST-запроса
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // Получать ответ в виде строки
-    curl_setopt($ch, CURLOPT_POST, true);  // Устанавливаем метод POST
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));  // Отправляем параметры
+    $defaultHeaders = [
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language: ru-RU,ru;q=0.9,en;q=0.8',
+    ];
+    if (!empty($headers) && is_array($headers)) {
+        $defaultHeaders = array_values(array_merge($defaultHeaders, $headers));
+    }
 
-    // Устанавливаем таймауты
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);  // Таймаут для подключения
-    curl_setopt($ch, CURLOPT_TIMEOUT, 120);  // Таймаут для выполнения запроса
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; LeadspaceGisReviews/1.0; +https://leadspace.ru)');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $defaultHeaders);
 
-    // Отправляем запрос
     $response = curl_exec($ch);
-    
-    // Проверяем на ошибки
+
     if (curl_errno($ch)) {
         $error_msg = curl_error($ch);
         curl_close($ch);
         return "Ошибка cURL: " . $error_msg;
     }
 
-    // Закрываем cURL-сессию
+    $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $finalUrl = (string)curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     curl_close($ch);
-    debugPrint($response);
 
-    return $response;
-}
-function debugPrint($variable) {
-    file_put_contents(dirname(__FILE__).'/phpQuery.html', print_r($variable, true)."\n", FILE_APPEND);
-    // echo '<pre>';
-    // print_r($variable);
-    // echo '</pre>';
+    if ($httpCode < 200 || $httpCode >= 400) {
+        return "Ошибка HTTP: " . $httpCode;
+    }
+
+    return [
+        'body' => $response,
+        'final_url' => $finalUrl,
+    ];
 }

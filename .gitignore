@@ -1,2 +1,11 @@
-.vscode
+.vscode/
+.tmp-security-skills/
+.kilo/
+reports/
+iupdate/
+__MACOSX/
+.DS_Store
 *.zip
+*.tar.gz
+lib/phpQuery.html
+getSiteHTML.php

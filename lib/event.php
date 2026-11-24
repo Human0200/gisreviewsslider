@@ -5,11 +5,7 @@ namespace leadspace\gisreviewsslider;
 class Event {
 
     static public function eventHandler(\Bitrix\Main\Entity\Event $event) {
-        $fields = $event->getParameter("fields");
-        echo "<pre>";
-        echo "Обработчик события";
-        var_dump($fields);
-        echo "</pre>";
+        // Intentionally empty: no debug output in production
     }
 
 }

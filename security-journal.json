@@ -1,0 +1,350 @@
+{
+  "schema_version": "1.0",
+  "module": {
+    "code": "leadspace.gisreviewsslider"
+  },
+  "current_state": {
+    "status": "ready_for_submission",
+    "last_run_id": "leadspace.gisreviewsslider-1790835820",
+    "archive_sha256": null,
+    "open_findings": 0,
+    "blocking_findings_open": 0,
+    "false_positive_findings": 0,
+    "accepted_risk_findings": 0,
+    "fixed_findings": 5,
+    "removed_findings": 0,
+    "total_findings": 5
+  },
+  "runs": [
+    {
+      "run_id": "leadspace.gisreviewsslider-1790832220",
+      "created_at": "2026-10-01T06:24:02+00:00",
+      "archive_sha256": null,
+      "scanner_request_id": "leadspace.gisreviewsslider-1790832220",
+      "input_summary": "Обнаружено 5 уязвимостей в 3 файлах при анализе 40 файлов модуля. Максимальная severity: medium. Источник: Marketplace security tab + локальная верификация кода до исправлений.",
+      "summary": {
+        "current_scan_findings": 5,
+        "severity_counts": {
+          "medium": 1,
+          "low": 4
+        },
+        "new_findings": 5,
+        "still_open_findings": 0,
+        "reopened_findings": 0,
+        "resolved_since_previous_run": 0
+      }
+    },
+    {
+      "run_id": "leadspace.gisreviewsslider-1790835820",
+      "created_at": "2026-10-01T06:24:02+00:00",
+      "archive_sha256": null,
+      "scanner_request_id": "leadspace.gisreviewsslider-1790835820",
+      "input_summary": "Повторный аудит после исправлений: ранее зафиксированные Authentication Bypass и Information Disclosure в agent.php/event.php/function.php больше не воспроизводятся. Endpoint импорта защищён POST + sessid + IsAdmin; LOG_FILENAME и debugPrint удалены; URL парсера вынесен в настройки модуля; отладочный вывод Event убран. Открытых уязвимостей в текущем коде модуля не обнаружено. Максимальная severity: none.",
+      "summary": {
+        "current_scan_findings": 0,
+        "severity_counts": {},
+        "new_findings": 0,
+        "still_open_findings": 0,
+        "reopened_findings": 0,
+        "resolved_since_previous_run": 5
+      }
+    }
+  ],
+  "findings": [
+    {
+      "journal_finding_id": "JF-00001",
+      "fingerprint": "c96a16a8c1760c0f90f397aab1c1e4ee",
+      "type": "Authentication Bypass",
+      "severity": "medium",
+      "status": "fixed",
+      "first_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "last_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "resolved_run_id": "leadspace.gisreviewsslider-1790835820",
+      "original_location": {
+        "file": "install/local/leadspace/gisreviewsslider/agent.php",
+        "line": "1"
+      },
+      "current_location": null,
+      "latest_vulnerability": {
+        "file": "install/local/leadspace/gisreviewsslider/agent.php",
+        "line": "1",
+        "type": "Authentication Bypass",
+        "severity": "medium",
+        "description": "Подтверждена: скрипт /local/leadspace/gisreviewsslider/agent.php размещён в DOCUMENT_ROOT и доступен из веба. Подключает prolog_before.php, но не выполняет check_bitrix_sessid(), IsAuthorized()/IsAdmin() и не ограничивает HTTP-метод. Скрипт инициирует state-changing импорт отзывов через внешний парсер и запись в БД. Любой неавторизованный пользователь может запустить парсинг и потенциально подменить данные отзывов.",
+        "recommendation": "Ограничить endpoint только POST, добавить check_bitrix_sessid() и проверку $USER->IsAuthorized()/$USER->IsAdmin() (или GetGroupRight модуля).",
+        "fix": "Before:\nrequire(...prolog_before.php);\n// сразу выполняется импорт\n\nAfter:\nif ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); die('Method Not Allowed'); }\nif (!check_bitrix_sessid()) { http_response_code(403); die('Forbidden'); }\nglobal $USER;\nif (!is_object($USER) || !$USER->IsAuthorized() || !$USER->IsAdmin()) { http_response_code(403); die('Forbidden'); }",
+        "reviewed": {
+          "oldSeverity": "medium",
+          "newSeverity": "medium",
+          "changed": false,
+          "category": "authenticated-or-limited-authorization-bypass",
+          "versionScope": "current",
+          "version": "current",
+          "currentVersionRelevance": "present-in-current-scan",
+          "action": "verify-on-latest-version",
+          "confidence": "medium",
+          "rationale": "Set to medium because the finding describes authorization bypass or privilege misuse, but not a direct high-impact IDOR, financial bug, or confirmed account takeover in the journal text."
+        }
+      },
+      "events": [
+        {
+          "run_id": "leadspace.gisreviewsslider-1790832220",
+          "event": "detected",
+          "at": "2026-10-01T06:24:02+00:00",
+          "location": {
+            "file": "install/local/leadspace/gisreviewsslider/agent.php",
+            "line": "1"
+          },
+          "status": "open"
+        },
+        {
+          "run_id": "leadspace.gisreviewsslider-1790835820",
+          "event": "resolved",
+          "at": "2026-10-01T06:24:02+00:00",
+          "status": "fixed"
+        }
+      ],
+      "resolution": {
+        "type": "not_reproduced_after_rescan",
+        "resolved_in_run": "leadspace.gisreviewsslider-1790835820",
+        "reason": "The reviewed scan no longer reports a matching finding for the current archive."
+      }
+    },
+    {
+      "journal_finding_id": "JF-00002",
+      "fingerprint": "65944a5aaacf6f9fd11fae61ee6f683d",
+      "type": "Information Disclosure",
+      "severity": "low",
+      "status": "fixed",
+      "first_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "last_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "resolved_run_id": "leadspace.gisreviewsslider-1790835820",
+      "original_location": {
+        "file": "install/local/leadspace/gisreviewsslider/agent.php",
+        "line": "22"
+      },
+      "current_location": null,
+      "latest_vulnerability": {
+        "file": "install/local/leadspace/gisreviewsslider/agent.php",
+        "line": "22",
+        "type": "Information Disclosure",
+        "severity": "low",
+        "description": "Подтверждена: URL внутреннего Selenium-парсера http://217.114.4.16/seleniumParser/handler.php захардкожен и использует HTTP без TLS. Параметры ACTION/PAGE_URL и HTML отзывов передаются в открытом виде; при MITM возможна подмена контента и запись поддельных отзывов в БД.",
+        "recommendation": "Вынести URL парсера в Option::get(), предпочитать HTTPS и добавить аутентификацию запросов к сервису (API-ключ/HMAC).",
+        "fix": "Before:\nsendPostRequestUsingCurl(\"http://217.114.4.16/seleniumParser/handler.php\", ...);\n\nAfter:\n$parserUrl = Option::get(\"leadspace.gisreviewsslider\", \"parser_url\", \"https://...\");\nsendPostRequestUsingCurl($parserUrl, ...);",
+        "reviewed": {
+          "oldSeverity": "low",
+          "newSeverity": "low",
+          "changed": false,
+          "category": "kept-as-reported",
+          "versionScope": "current",
+          "version": "current",
+          "currentVersionRelevance": "present-in-current-scan",
+          "action": "fix",
+          "confidence": "medium",
+          "rationale": "Severity left unchanged after review; no stronger Bitrix/BUS-specific downgrade condition was identified from the journal text alone."
+        }
+      },
+      "events": [
+        {
+          "run_id": "leadspace.gisreviewsslider-1790832220",
+          "event": "detected",
+          "at": "2026-10-01T06:24:02+00:00",
+          "location": {
+            "file": "install/local/leadspace/gisreviewsslider/agent.php",
+            "line": "22"
+          },
+          "status": "open"
+        },
+        {
+          "run_id": "leadspace.gisreviewsslider-1790835820",
+          "event": "resolved",
+          "at": "2026-10-01T06:24:02+00:00",
+          "status": "fixed"
+        }
+      ],
+      "resolution": {
+        "type": "not_reproduced_after_rescan",
+        "resolved_in_run": "leadspace.gisreviewsslider-1790835820",
+        "reason": "The reviewed scan no longer reports a matching finding for the current archive."
+      }
+    },
+    {
+      "journal_finding_id": "JF-00003",
+      "fingerprint": "f4eb01a27fd54e305539fd4fba0217ce",
+      "type": "Information Disclosure",
+      "severity": "low",
+      "status": "fixed",
+      "first_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "last_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "resolved_run_id": "leadspace.gisreviewsslider-1790835820",
+      "original_location": {
+        "file": "install/local/leadspace/gisreviewsslider/agent.php",
+        "line": "4"
+      },
+      "current_location": null,
+      "latest_vulnerability": {
+        "file": "install/local/leadspace/gisreviewsslider/agent.php",
+        "line": "4",
+        "type": "Information Disclosure",
+        "severity": "low",
+        "description": "Подтверждена: define(\"LOG_FILENAME\", $_SERVER[\"DOCUMENT_ROOT\"] . \"/log1.txt\") указывает лог в web-доступный корень сайта. При записи отладочных данных файл может быть прочитан по URL https://site/log1.txt.",
+        "recommendation": "Удалить константу либо писать логи вне DOCUMENT_ROOT / через AddMessage2Log().",
+        "fix": "Before:\ndefine(\"LOG_FILENAME\", $_SERVER[\"DOCUMENT_ROOT\"] . \"/log1.txt\");\n\nAfter:\n// удалить константу; для ошибок использовать AddMessage2Log($msg, 'leadspace.gisreviewsslider');",
+        "reviewed": {
+          "oldSeverity": "low",
+          "newSeverity": "low",
+          "changed": false,
+          "category": "kept-as-reported",
+          "versionScope": "current",
+          "version": "current",
+          "currentVersionRelevance": "present-in-current-scan",
+          "action": "fix",
+          "confidence": "medium",
+          "rationale": "Severity left unchanged after review; no stronger Bitrix/BUS-specific downgrade condition was identified from the journal text alone."
+        }
+      },
+      "events": [
+        {
+          "run_id": "leadspace.gisreviewsslider-1790832220",
+          "event": "detected",
+          "at": "2026-10-01T06:24:02+00:00",
+          "location": {
+            "file": "install/local/leadspace/gisreviewsslider/agent.php",
+            "line": "4"
+          },
+          "status": "open"
+        },
+        {
+          "run_id": "leadspace.gisreviewsslider-1790835820",
+          "event": "resolved",
+          "at": "2026-10-01T06:24:02+00:00",
+          "status": "fixed"
+        }
+      ],
+      "resolution": {
+        "type": "not_reproduced_after_rescan",
+        "resolved_in_run": "leadspace.gisreviewsslider-1790835820",
+        "reason": "The reviewed scan no longer reports a matching finding for the current archive."
+      }
+    },
+    {
+      "journal_finding_id": "JF-00004",
+      "fingerprint": "e03f3a645aac9834c4ca64d92fe320bf",
+      "type": "Information Disclosure",
+      "severity": "low",
+      "status": "fixed",
+      "first_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "last_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "resolved_run_id": "leadspace.gisreviewsslider-1790835820",
+      "original_location": {
+        "file": "lib/event.php",
+        "line": "9"
+      },
+      "current_location": null,
+      "latest_vulnerability": {
+        "file": "lib/event.php",
+        "line": "9",
+        "type": "Information Disclosure",
+        "severity": "low",
+        "description": "Подтверждена: Event::eventHandler() выводит в HTML отладочный dump полей сущности (echo/var_dump) без ограничения правами администратора. При срабатывании события возможна утечка структуры $fields в ответ.",
+        "recommendation": "Удалить отладочный вывод из production-кода либо писать в системный лог Bitrix только для админа.",
+        "fix": "Before:\necho \"<pre>\"; var_dump($fields); echo \"</pre>\";\n\nAfter:\n// пустой handler без вывода в HTTP-ответ",
+        "reviewed": {
+          "oldSeverity": "low",
+          "newSeverity": "low",
+          "changed": false,
+          "category": "kept-as-reported",
+          "versionScope": "current",
+          "version": "current",
+          "currentVersionRelevance": "present-in-current-scan",
+          "action": "fix",
+          "confidence": "medium",
+          "rationale": "Severity left unchanged after review; no stronger Bitrix/BUS-specific downgrade condition was identified from the journal text alone."
+        }
+      },
+      "events": [
+        {
+          "run_id": "leadspace.gisreviewsslider-1790832220",
+          "event": "detected",
+          "at": "2026-10-01T06:24:02+00:00",
+          "location": {
+            "file": "lib/event.php",
+            "line": "9"
+          },
+          "status": "open"
+        },
+        {
+          "run_id": "leadspace.gisreviewsslider-1790835820",
+          "event": "resolved",
+          "at": "2026-10-01T06:24:02+00:00",
+          "status": "fixed"
+        }
+      ],
+      "resolution": {
+        "type": "not_reproduced_after_rescan",
+        "resolved_in_run": "leadspace.gisreviewsslider-1790835820",
+        "reason": "The reviewed scan no longer reports a matching finding for the current archive."
+      }
+    },
+    {
+      "journal_finding_id": "JF-00005",
+      "fingerprint": "84888f1469006ce8925205a8e5d3b3b2",
+      "type": "Information Disclosure",
+      "severity": "low",
+      "status": "fixed",
+      "first_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "last_seen_run_id": "leadspace.gisreviewsslider-1790832220",
+      "resolved_run_id": "leadspace.gisreviewsslider-1790835820",
+      "original_location": {
+        "file": "lib/function.php",
+        "line": "31"
+      },
+      "current_location": null,
+      "latest_vulnerability": {
+        "file": "lib/function.php",
+        "line": "31",
+        "type": "Information Disclosure",
+        "severity": "low",
+        "description": "Подтверждена: debugPrint() с print_r()/file_put_contents в phpQuery.html оставлена в production и вызывается из sendPostRequestUsingCurl(), сохраняя ответы парсера в файловую систему модуля.",
+        "recommendation": "Удалить debugPrint() и её вызовы; для отладки использовать AddMessage2Log()/Debug::writeToFile() в защищённой директории.",
+        "fix": "Before:\ndebugPrint($response);\nfunction debugPrint($variable) { file_put_contents(...print_r...); }\n\nAfter:\n// вернуть $response без debug-записи",
+        "reviewed": {
+          "oldSeverity": "low",
+          "newSeverity": "low",
+          "changed": false,
+          "category": "kept-as-reported",
+          "versionScope": "current",
+          "version": "current",
+          "currentVersionRelevance": "present-in-current-scan",
+          "action": "fix",
+          "confidence": "medium",
+          "rationale": "Severity left unchanged after review; no stronger Bitrix/BUS-specific downgrade condition was identified from the journal text alone."
+        }
+      },
+      "events": [
+        {
+          "run_id": "leadspace.gisreviewsslider-1790832220",
+          "event": "detected",
+          "at": "2026-10-01T06:24:02+00:00",
+          "location": {
+            "file": "lib/function.php",
+            "line": "31"
+          },
+          "status": "open"
+        },
+        {
+          "run_id": "leadspace.gisreviewsslider-1790835820",
+          "event": "resolved",
+          "at": "2026-10-01T06:24:02+00:00",
+          "status": "fixed"
+        }
+      ],
+      "resolution": {
+        "type": "not_reproduced_after_rescan",
+        "resolved_in_run": "leadspace.gisreviewsslider-1790835820",
+        "reason": "The reviewed scan no longer reports a matching finding for the current archive."
+      }
+    }
+  ]
+}

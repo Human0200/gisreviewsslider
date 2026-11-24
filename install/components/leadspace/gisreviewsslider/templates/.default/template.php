@@ -33,6 +33,20 @@ function ls_sanitize_color($value, $default) {
     }
     return $default;
 }
+
+function ls_sanitize_image_url($value, $default) {
+    $value = trim((string)$value);
+    if ($value === '') {
+        return $default;
+    }
+
+    if (preg_match('#^https://#i', $value) || preg_match('#^data:image/#i', $value)) {
+        return $value;
+    }
+
+    return $default;
+}
+
 $colorButtons     = ls_sanitize_color($arParams["COLOR_BUTTONS"], "#007aff");
 $colorButtonText  = ls_sanitize_color($arParams["COLOR_BUTTON_TEXT"], "#212121");
 $colorButton      = ls_sanitize_color($arParams["COLOR_BUTTON"], "#ffffff");
@@ -89,13 +103,13 @@ $colorButton      = ls_sanitize_color($arParams["COLOR_BUTTON"], "#ffffff");
 
         <? if ($arParams["SHOW_COUNT"] == "SHOW_COUNT_REVIEWS") { ?>
             <div class="ls_reviews-count"><a target="_blank"
-                                             href="<?= $idCompany ?>"><?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_NA") ?><?= $arResult["COMPANY"][0]["COUNTREVIEWS"] ?> <?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_REVIEWS") ?></a>
+                                             href="<?= $idCompany ?>"><?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_NA") ?><?= htmlspecialcharsbx($arResult["COMPANY"][0]["COUNTREVIEWS"]) ?> <?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_REVIEWS") ?></a>
             </div>
         <? } ?>
 
         <? if ($arParams["SHOW_COUNT"] == "SHOW_COUNT_MARKS") { ?>
             <div class="ls_reviews-count"><a target="_blank"
-                                             href="<?= $idCompany ?>"><?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_NA") ?><?= $arResult["COMPANY"][0]["COUNTMARKS"] ?> <?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_MARKS") ?></a>
+                                             href="<?= $idCompany ?>"><?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_NA") ?><?= htmlspecialcharsbx($arResult["COMPANY"][0]["COUNTMARKS"]) ?> <?= GetMessage("LEADSPACE_GISREVIEWSSLIDER_MARKS") ?></a>
             </div>
         <? } ?>
         <? if($arParams["GIS_BUTTON"]){?>
@@ -119,7 +133,7 @@ $colorButton      = ls_sanitize_color($arParams["COLOR_BUTTON"], "#ffffff");
                                         <? if (!$value["IMAGE"]) {
                                             $value["IMAGE"] = "data:image/svg+xml,%3Csvg width='100%25' height='100%25' version='1.1' viewBox='0 0 123.96 124.31' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(-54.068 -77.525)' fill='%23b3b3b3'%3E%3Ccircle cx='116.18' cy='112.13' r='34.607'/%3E%3Cpath d='m54.068 201.84h123.96v-7.6073c-3.3235-20.13-29.184-36.953-61.047-37.012-37.638 0.90944-59.352 17.834-62.914 37.012z'/%3E%3C/g%3E%3C/svg%3E%0A";
                                         } ?>
-                                        <img class="ls-avatar" loading="lazy" src="<?= htmlspecialcharsbx($value["IMAGE"]) ?>"
+                                        <img class="ls-avatar" loading="lazy" src="<?= htmlspecialcharsbx(ls_sanitize_image_url($value["IMAGE"], "data:image/svg+xml,%3Csvg width='100%25' height='100%25' version='1.1' viewBox='0 0 123.96 124.31' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(-54.068 -77.525)' fill='%23b3b3b3'%3E%3Ccircle cx='116.18' cy='112.13' r='34.607'/%3E%3Cpath d='m54.068 201.84h123.96v-7.6073c-3.3235-20.13-29.184-36.953-61.047-37.012-37.638 0.90944-59.352 17.834-62.914 37.012z'/%3E%3C/g%3E%3C/svg%3E%0A")) ?>"
                                              alt="<?= htmlspecialcharsbx($value["NAME"]) ?>">
 
 

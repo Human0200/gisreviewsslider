@@ -40,6 +40,24 @@ Loader::includeModule($module_id);
 // Получаем запрос
 $request = HttpApplication::getInstance()->getContext()->getRequest();
 
+// AJAX-импорт прямо из страницы настроек (без отдельного файла в /bitrix/admin или /local)
+if (
+    $request->isPost()
+    && ($request->getPost('gis_import') === 'Y' || $request->get('gis_import') === 'Y')
+    && check_bitrix_sessid()
+) {
+    global $USER;
+    if (!is_object($USER) || !$USER->IsAuthorized() || !$USER->IsAdmin()) {
+        http_response_code(403);
+        echo 'Forbidden';
+        die();
+    }
+
+    header('Content-Type: text/html; charset=UTF-8');
+    echo \leadspace\gisreviewsslider\Agent::runImport(true);
+    die();
+}
+
 // Массив вкладок и полей настроек модуля
 $aTabs = [
     [
@@ -157,11 +175,13 @@ function get_category(catname) {
 
     result.innerHTML = '<img src="/bitrix/images/leadspace.gisreviewsslider/loader.gif" alt="">';
 
-    fetch('/local/leadspace/gisreviewsslider/agent.php?catname=' + encodeURIComponent(catname), {
-        method: 'GET',
+    fetch('<?=CUtil::JSEscape($APPLICATION->GetCurPage())?>?mid=<?=CUtil::JSEscape($module_id)?>&lang=<?=CUtil::JSEscape(LANGUAGE_ID)?>&gis_import=Y', {
+        method: 'POST',
         headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        body: 'sessid=<?=CUtil::JSEscape(bitrix_sessid())?>&gis_import=Y&catname=' + encodeURIComponent(catname)
     })
     .then(function(response) {
         if (!response.ok) {

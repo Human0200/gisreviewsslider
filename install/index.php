@@ -78,6 +78,12 @@ class leadspace_gisreviewsslider extends CModule
 			$this->setResponse(false, $resMsg);
 			return false;
 		}
+		CopyDirFiles(
+			__DIR__ . "/admin",
+			$_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin/",
+			true,
+			true
+		);
 		$res = CopyDirFiles(
 			__DIR__ . "/components",
 			$this->COMPONENTS_PATH,
